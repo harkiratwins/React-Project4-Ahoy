@@ -277,13 +277,13 @@ const Passcode = () => {
             </div>
           </div>
           <div className="left aligned eight wide column">
-            <a className="maroon-color" href="/">
+            <a className="maroon-color" href="/EmpLogin">
               <i aria-hidden="true" className="mail outline icon"></i>
               Email Login
             </a>
           </div>
           <div className="right aligned eight wide column">
-            <a className="maroon-color" href>
+            <a className="maroon-color" href="/">
               Exit Main App
             </a>
           </div>

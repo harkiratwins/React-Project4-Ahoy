@@ -5,7 +5,7 @@ import Login from "./Pages/Login";
 import Passcode from "./Pages/Passcode";
 import EmpLogin from "./Pages/EmpLogin";
 import Location from "./Pages/Location";
-import Dashboard from "./Pages/Dashboard"
+import Dashboard from "./Pages/Dashboard";
 
 function App() {
   return (

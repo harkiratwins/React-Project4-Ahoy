@@ -16,6 +16,16 @@
   margin-bottom: 10px!important;
 }
 
+.errors {
+  position: absolute;
+  color: red;
+  font-size: 15px;
+}
+
+label {
+  font-size: .7rem;
+}
+
 .circle {
   height: 15px;
   width: 15px;

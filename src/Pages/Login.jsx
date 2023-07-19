@@ -9,12 +9,21 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "react-bootstrap/Spinner";
+import { Formik, Form as FormikForm } from "formik";
+import * as Yup from "yup";
+
+const SignupSchemaa = Yup.object().shape({
+  emailId: Yup.string().email("Email is invalid").required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 charaters")
+    .required("Password is required"),
+});
 
 const Login = () => {
   const [Show, setShow] = useState(false);
   const [details, setDetail] = useState([]);
   const [loader, setLoader] = useState(false);
-  const [validated, setValidated] = useState(false);
+ 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const navigater = useNavigate();
@@ -22,76 +31,61 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [messages, setMessages] = useState("");
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
+  const handleSubmit = (values) => {
+    setLoader(true);
 
-      event.stopPropagation();
-      setValidated(true);
+    let person = {
+      emailId,
+      password,
+    };
+    console.log(person);
 
-    }
-     
-    else 
-    
-    {
-      setValidated(true);
-      setLoader(true);
+    setDetail([...details, person]);
 
-      
-      let person = {
-        emailId,
-        password,
-      };
-      console.log(person);
+    const personData = {
+      businessId: "4",
+      emailId: values.emailId,
+      applicationId: "58",
+      password: values.password,
+      ipAddress: "string",
+      rememberMe: true,
+      isEmployee: true,
+    };
+    console.log(personData);
 
-      setDetail([...details, person]);
+    axios
+      .post(
+        "https://rehntitapistaging.azurewebsites.net/api/Auth/Login",
+        personData
+      )
+      .then((response) => {
+        navigater("/Passcode");
+        setMessages(response.data.responseMessage);
+        console.log(messages);
+        setLoader(false);
 
-      const personData = {
-        businessId: "4",
-        emailId: emailId,
-        applicationId: "58",
-        password: password,
-        ipAddress: "string",
-        rememberMe: true,
-        isEmployee: true,
-      };
-      console.log(personData);
-
-      axios
-        .post(
-          "https://rehntitapistaging.azurewebsites.net/api/Auth/Login",
-          personData
-        )
-        .then((response) => {
-          navigater("/Passcode");
-          setMessages(response.data.responseMessage);
-          console.log(messages);
-          setLoader(false);
-
-          localStorage.setItem("message", response.data.responseMessage);
-        })
-        .catch((error) => {
-          setLoader(false);
-          toast.error(error.response.data.responseMessage, {
-            position: "bottom-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
+        localStorage.setItem("message", response.data.responseMessage);
+      })
+      .catch((error) => {
+        setLoader(false);
+        toast.error(error.response.data.responseMessage, {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
         });
-    }
+      });
   };
-  function handleForgot() {
+  function handleForgot(values) {
     console.log("hghfd");
 
     const forgotData = {
       businessId: 4,
-      emailId: emailId,
+      emailId: values.emailId,
     };
 
     console.log(forgotData);
@@ -115,7 +109,7 @@ const Login = () => {
         });
         handleClose();
       })
-      .catch((error)=>{
+      .catch((error) => {
         console.log(error);
         toast.error(error.response.data.responseMessage, {
           position: "bottom-right",
@@ -140,83 +134,86 @@ const Login = () => {
           src={logo1}
           className="ui tiny centered image"
         />
-        <form
-          className="ui large form"
-          validated={validated}
+        <Formik
+          validationSchema={SignupSchemaa}
           onSubmit={handleSubmit}
+          initialValues={{
+            emailId: "",
+            password: "",
+          }}
         >
-          <div className="field">
-            <label>Email</label>
-            <div textalign="left" data="txtEmail" className="ui fluid input">
-              <input
-                id="form-input-control-error-email"
-                name="emailId"
-                placeholder="Email Address"
-                type="text"
-                required
-                onChange={(e) => setEmail(e.target.value)}
-                value={emailId}
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label>Password</label>
-            <div data="txtPassword" className="ui fluid input">
-              <input
-                name="password"
-                placeholder="Password"
-                type="password"
-                aria-invalid="true"
-                required
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
-              />
-            </div>
-          </div>
-          <div className="ui grid">
-            <div className="left aligned eight wide column">
-              <div className="field custome-checkbox">
-                <Checkbox label="Remember me" />
+          {({ errors, values, handleChange }) => (
+            <FormikForm className="ui large form">
+              <div className="mb-5">
+                <label className="float-start">Email address</label>
+                <input
+                  type="email"
+                  className="form-control rounded-pill"
+                  placeholder="Enter email"
+                  name="emailId"
+                  onChange={handleChange}
+                  value={values.emailId}
+                />
+                <div className="errors">{errors.emailId}</div>
               </div>
-            </div>
-            <div className="right aligned eight wide column">
-              <p
-                className="orange-color forget_password_css"
-                onClick={() => setShow(true)}
-              >
-                Forgot Password?
-              </p>
-            </div>
+              <div className="mb-5">
+                <label className="float-start">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  className="form-control rounded-pill"
+                  placeholder="Enter password"
+                  onChange={handleChange}
+                  value={values.password}
+                />
+                <div className="errors">{errors.password}</div>
+              </div>
+              <div className="ui grid">
+                <div className="left aligned eight wide column">
+                  <div className="field custome-checkbox">
+                    <Checkbox label="Remember me" />
+                  </div>
+                </div>
+                <div className="right aligned eight wide column">
+                  <p
+                    className="orange-color forget_password_css"
+                    onClick={() => setShow(true)}
+                  >
+                    Forgot Password?
+                  </p>
+                </div>
 
-            <div className="right aligned sixteen wide column">
-              <Button
-                className="button"
-                variant="danger"
-                type="submit"
-                style={{
-                  borderRadius: "20px",
-                  width: "90px",
-                  height: "36px",
-                  border: "1px solid #f54952",
-                }}
-              >
-                {!loader ? (
-                  <span>Login</span>
-                ) : (
-                  <Spinner
+                <div className="right aligned sixteen wide column">
+                  <Button
+                    className="button"
+                    variant="danger"
+                    type="submit"
                     style={{
-                      position: "absolute",
-                      bottom: "25px",
-                      left: "379px",
+                      borderRadius: "20px",
+                      width: "90px",
+                      height: "36px",
+                      border: "1px solid #f54952",
                     }}
-                    animation="border"
-                    size="sm"
-                  />
-                )}
-              </Button>
-            </div>
-          </div>
-        </form>
+                  >
+                    {!loader ? (
+                      <span>Login</span>
+                    ) : (
+                      <Spinner
+                        style={{
+                          position: "absolute",
+                          bottom: "25px",
+                          left: "379px",
+                        }}
+                        animation="border"
+                        size="sm"
+                      />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </FormikForm>
+          )}
+        </Formik>
         <Modal
           size="sm"
           show={Show}
@@ -230,23 +227,34 @@ const Login = () => {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form className="px-3">
-              <Form.Group
-                className="mb-3"
-                controlId="exampleForm.ControlInput1"
-              >
-                <Form.Label className="mbt">
-                  Enter email to reset password
-                </Form.Label>
-                <Form.Control
-                  type="email"
-                  name="emailId"
-                  value={emailId}
-                  placeholder="E-mail address"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Form.Group>
-            </Form>
+            <Formik
+              validationSchema={SignupSchemaa}
+              onSubmit={handleForgot}
+              initialValues={{
+                emailId: "",
+              }}
+            >
+              {({ errors, values, handleChange }) => (
+                <FormikForm className="px-3">
+                  <Form.Group
+                    className="mb-3"
+                    controlId="exampleForm.ControlInput1"
+                  >
+                    <Form.Label className="mbt">
+                      Enter email to reset password
+                    </Form.Label>
+                    <Form.Control
+                      // type="email"
+                      placeholder="Enter email"
+                      name="emailId"
+                      onChange={handleChange}
+                      value={values.emailId}
+                    />
+                    <div className="errors">{errors.emailId}</div>
+                  </Form.Group>
+                </FormikForm>
+              )}
+            </Formik>
             <Button className="ui button orange-btn" onClick={handleForgot}>
               {!loader ? (
                 <span>Send</span>

@@ -19,11 +19,15 @@ const SignupSchemaa = Yup.object().shape({
     .required("Password is required"),
 });
 
+const schemaa = Yup.object().shape({
+  emailId: Yup.string().email("Please enter a valid e-mail").required("Email is required"),
+});
+
 const Login = () => {
   const [Show, setShow] = useState(false);
   const [details, setDetail] = useState([]);
   const [loader, setLoader] = useState(false);
- 
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const navigater = useNavigate();
@@ -32,6 +36,7 @@ const Login = () => {
   const [messages, setMessages] = useState("");
 
   const handleSubmit = (values) => {
+    debugger
     setLoader(true);
 
     let person = {
@@ -81,7 +86,7 @@ const Login = () => {
       });
   };
   function handleForgot(values) {
-    console.log("hghfd");
+    
 
     const forgotData = {
       businessId: 4,
@@ -126,7 +131,7 @@ const Login = () => {
   }
 
   return (
-    <div class="ui center aligned middle aligned grid common-form">
+    <div className="ui center aligned middle aligned grid common-form">
       <div className="column cmn-shad">
         <img
           title="Always Another Wave"
@@ -228,7 +233,7 @@ const Login = () => {
           </Modal.Header>
           <Modal.Body>
             <Formik
-              validationSchema={SignupSchemaa}
+              validationSchema={schemaa}
               onSubmit={handleForgot}
               initialValues={{
                 emailId: "",
@@ -244,28 +249,34 @@ const Login = () => {
                       Enter email to reset password
                     </Form.Label>
                     <Form.Control
-                      // type="email"
-                      placeholder="Enter email"
-                      name="emailId"
-                      onChange={handleChange}
+                      placeholder="E-mail address"
                       value={values.emailId}
+                      onChange={handleChange}
+                      name="emailId"
                     />
                     <div className="errors">{errors.emailId}</div>
                   </Form.Group>
+                  <br/>
+
+                  <Button type="submit"
+                    className="ui button orange-btn">
+                    {!loader ? (
+                      <span>Send</span>
+                    ) : (
+                      <Spinner
+                        style={{
+                          position: "absolute",
+                          bottom: "23px",
+                          left: "38px",
+                        }}
+                        animation="border"
+                        size="sm"
+                      />
+                    )}
+                  </Button>
                 </FormikForm>
               )}
             </Formik>
-            <Button className="ui button orange-btn" onClick={handleForgot}>
-              {!loader ? (
-                <span>Send</span>
-              ) : (
-                <Spinner
-                  style={{ position: "absolute", bottom: "23px", left: "38px" }}
-                  animation="border"
-                  size="sm"
-                />
-              )}
-            </Button>
           </Modal.Body>
         </Modal>
         <ToastContainer

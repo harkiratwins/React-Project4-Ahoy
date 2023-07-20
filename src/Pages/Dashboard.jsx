@@ -398,7 +398,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          
           <div
             className="card"
             style={{
@@ -638,6 +637,22 @@ const Dashboard = () => {
                   <p style={{ color: "red" }}>0 OUT | 14 IN</p>
                 </div>
               </Carousel>
+            </div>
+          </div>
+          <div
+            className="card"
+            style={{
+              width: "60%",
+              height: "485px",
+              boxShadow: "5px 5px 5px 5px #F5F5F5",
+              border: "0px",
+              borderRadius: "10px",
+              marginTop: "30px",
+            }}
+          >
+            <div>
+              <div className="ui button orange-btn report-btn">Report</div>
+              
             </div>
           </div>
         </Content>

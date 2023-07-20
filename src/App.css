@@ -26,6 +26,14 @@ label {
   font-size: .7rem;
 }
 
+.ui.button.orange-btn.report-btn {
+  position: absolute;
+  right: 74px;
+  top: 26px;
+  z-index: 98;
+  display: block;
+}
+
 .circle {
   height: 15px;
   width: 15px;
